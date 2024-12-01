@@ -3,7 +3,7 @@ import speech_recognition as sr
 import win32com.client as win32
 import tkinter as tk
 from tkinter import filedialog
-
+import pyautogui
 
 # Initialize text-to-speech engine
 engine = pyttsx3.init()
@@ -42,23 +42,37 @@ def listen_for_command():
 
 # Function to control the PowerPoint presentation
 def control_presentation(presentation, command):
-    if "next" in command or "forward" in command:
-        presentation.SlideShowWindow.View.Next()
-        speak("Moving forward to the next slide.")
-    elif "previous" in command or "back" in command:
-        presentation.SlideShowWindow.View.Previous()
-        speak("Going back to the previous slide.")
-    elif "start" in command or "presentation" in command:
-        presentation.SlideShowSettings.Run()
-        speak("Starting the slideshow.")
-    elif "end presentation" in command or "stop" in command:
-        presentation.SlideShowWindow.View.Exit()
-        speak("Ending the slideshow.")
-    elif "exit" in command or "quit" in command:
-        speak("Exiting the program. Goodbye!")
-        return "exit"
-    else:
-        speak("I didn't understand the command.")
+    try:
+        # Access the slides directly
+        slides = presentation.Slides
+
+        if "next slide" in command or "forward" in command:
+            pyautogui.press('right')  # Simulate right arrow key press
+            speak("Moving forward to the next slide.")
+
+        elif "previous slide" in command or "back" in command:
+            pyautogui.press('left')  # Simulate left arrow key press
+            speak("Going back to the previous slide.")
+
+        elif "start" in command or "presentation" in command:
+            presentation.SlideShowSettings.Run()
+            speak("Starting the slideshow.")
+
+        elif "end presentation" in command or "stop" in command:
+            presentation.SlideShowWindow.View.Exit()
+            speak("Ending the slideshow.")
+
+        elif "exit" in command or "quit" in command:
+            speak("Exiting the program. Goodbye!")
+            return "exit"
+
+        else:
+            speak("I didn't understand the command.")
+
+    except Exception as e:
+        print(f"Error controlling presentation: {e}")
+        speak("An error occurred while controlling the presentation.")
+
     return "continue"
 
 
